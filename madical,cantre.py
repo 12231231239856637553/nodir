@@ -44,10 +44,17 @@ class Stomatolog(Doctor):
     def diagnose(self, patient_name, complaint):
         return f"{patient_name}, sizning shikoyatingiz: '{complaint}'. Tish muolajasi talab etiladi.", "Og'riq qoldiruvchi va antibiotiklar"
 
+class Hirurg(Doctor):
+    def diagnose(self, patient_name, complaint):
+        print(f"{patient_name}, siz operatsiya xonasiga olib ketildingiz...")
+        print("Hamshira operatsiya asboblarini olib kelmoqda...")
+        print("Operatsiya boshlandi...")
+        print("Afsuski, biz bemorni saqlab qola olmadik.")
+        return f"{patient_name}, operatsiya muvaffaqiyatsiz tugadi.", "---"
+
 class MedicalCenter:
     def __init__(self):
         self.queue = PatientQueue()
-        self.rooms = {i: [] for i in range(1, 7)}
         self.doctors = [
             Travmatolog("Dr. Rustamov"),
             Psixolog("Dr. G'ulomov"),
@@ -55,17 +62,11 @@ class MedicalCenter:
             OilaShifokori("Dr. Karimov"),
             Travmatolog("Dr. Usmonov"),
             OilaShifokori("Dr. Shirinova"),
-            Stomatolog("Dr. Hasanov")
+            Stomatolog("Dr. Hasanov"),
+            Hirurg("Dr. Akbarov")
         ]
         self.patient_records = []
         self.load_data()
-
-    def assign_room(self, patient_name):
-        for room, patients in self.rooms.items():
-            if len(patients) < 20:
-                patients.append(patient_name)
-                return room
-        return None
 
     def visit_doctor(self, patient_name, doctor_index):
         if 0 <= doctor_index < len(self.doctors):
@@ -75,7 +76,7 @@ class MedicalCenter:
             print(diagnosis)
             print(f"Tavsiya etilgan dori-darmonlar: {medication}")
         else:
-            print("Xatolik: Notogri shifokor tanlandi!")
+            print("Xatolik: Notog'ri shifokor tanlandi!")
 
     def save_data(self):
         with open("patient_records.json", "w") as file:
@@ -90,40 +91,37 @@ class MedicalCenter:
 
 if __name__ == "__main__":
     center = MedicalCenter()
+    vehicle_choice = input("Siz mashinada keldingizmi? (ha/yo'q): ").strip().lower()
+    if vehicle_choice == "ha":
+        park_choice = input("Parkovkamiz bor, qo'yishni hohlaysizmi? (ha/yo'q): ").strip().lower()
+        if park_choice == "ha":
+            print("Mashinangiz parkovkaga qo'yildi.")
+    
+    print("Medical markazimizga xush kelibsiz!")
+    
     while True:
         action = input("Tibbiyot markaziga kirish uchun 'kirish', chiqish uchun 'chiqish' deb yozing: ").strip().lower()
         
         if action == "kirish":
             patient_name = input("Ismingizni kiriting: ").strip()
             if not patient_name:
-                print("Xatolik: Ism bosh bolishi mumkin emas!")
+                print("Xatolik: Ism bo'sh bo'lishi mumkin emas!")
                 continue
 
-            ticket = center.queue.get_ticket()
-            room = center.assign_room(patient_name)
-
-            if room is None:
-                print(f"Kechirasiz, {patient_name}, barcha xonalar tola!")
-                continue
-
-            print(f"{patient_name} chipta {ticket} oldi va {room}-xonaga yonaltirildi.")
-            
-            complaint = input(f"{patient_name}, qanday shikoyatingiz bor? ")
-            
             print("Shifokorni tanlang:")
             for i, doctor in enumerate(center.doctors):
                 print(f"{i} - {doctor.__class__.__name__} ({doctor.name})")
 
             try:
-                doctor_index = int(input("Shifokor raqamini kiriting (0-6): "))
+                doctor_index = int(input("Shifokor raqamini kiriting (0-7): "))
                 center.visit_doctor(patient_name, doctor_index)
             except ValueError:
-                print("Xatolik: Iltimos, 0 dan 6 gacha bolgan raqamni kiriting!")
+                print("Xatolik: Iltimos, 0 dan 7 gacha bo'lgan raqamni kiriting!")
 
         elif action == "chiqish":
             center.save_data()
-            print("Malumotlar saqlandi. Dasturdan chiqilmoqda.")
+            print("Ma'lumotlar saqlandi. Dasturdan chiqilmoqda.")
             break
         
         else:
-            print("Notogri buyruq! 'kirish' yoki 'chiqish' deb yozing.")
+            print("Noto'g'ri buyruq! 'kirish' yoki 'chiqish' deb yozing.")
