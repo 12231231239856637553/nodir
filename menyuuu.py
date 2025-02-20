@@ -1,12 +1,29 @@
+from uuid import uuid4
+
 class Basket:
     def __init__(self):
+        self.__id = uuid4()
         self.products = []
+
+    def get_id(self):
+        return self.__id
+
+    def menu(self):
+        return """
+        1. Mahsulot qo'shish
+        2. Savatni ko'rish
+        3. Umumiy narxni hisoblash
+        4. Mahsulotni olib tashlash
+        5. Savatni tozalash
+        6. Mahsulot miqdorini yangilash
+        7. Chiqish
+        """
 
     def add(self, product, price, quantity):
         self.products.append({"product": product, "price": price, "quantity": quantity})
-        return f"{product} ({quantity} savatga qo'shildi"
+        return f"{product} ({quantity} dona) savatga qo'shildi"
 
-    def show(self): 
+    def show(self):
         if not self.products:
             return "Savat bo'sh"
         result = "Savat ichida:\n"
@@ -15,9 +32,7 @@ class Basket:
         return result
 
     def calc(self):
-        summa = 0
-        for i in self.products:
-            summa += i["price"] * i["quantity"]
+        summa = sum(i["price"] * i["quantity"] for i in self.products)
         return f"Umumiy narx: {summa} USD"
 
     def remove(self, product, quantity=1):
@@ -42,22 +57,5 @@ class Basket:
         return f"{product} savatda topilmadi"
 
 
-
-
-
-
-# class Avto:
-#     def __init__(self,name,year,km = 10):
-#         self.name = name
-#         self.year = year
-#         self.__km = km
-
-#         def get_km(self):
-#             return self.__km
-        
-
-# a = Avto("Camaro",2024,10)
-# a.__km = 0
-# a.year = 2024
-# a.familiya = "sagatov"
-# print(a.familiya)
+basket = Basket()
+print(basket.menu())
